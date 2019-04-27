@@ -1,6 +1,11 @@
 package com.quang.minh.nhanhnhuchop.main;
 
 import android.app.Dialog;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.app.PendingIntent;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -9,8 +14,11 @@ import android.content.pm.Signature;
 import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.SwitchCompat;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -18,10 +26,13 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -41,6 +52,8 @@ import com.facebook.login.widget.LoginButton;
 import com.facebook.login.widget.ProfilePictureView;
 import com.quang.minh.nhanhnhuchop.R;
 import com.quang.minh.nhanhnhuchop.database.database;
+import com.quang.minh.nhanhnhuchop.fragment.fragment_canhan;
+import com.quang.minh.nhanhnhuchop.fragment.fragment_server;
 import com.quang.minh.nhanhnhuchop.model.player;
 import com.quang.minh.nhanhnhuchop.model.player_adapter;
 
@@ -50,14 +63,17 @@ import org.json.JSONObject;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 
 public class Home extends AppCompatActivity {
     private ProfilePictureView prof;
     private LoginButton loginButton;
-    private TextView tv_name_acc_facebook, tv_all;
+    private TextView tv_name_acc_facebook, tv_all,tv_timePicker;
     private Button btChoiNgay;
+    Spinner spinner_repeat;
     private player_adapter adapter;
     private ArrayList<player> player_list;
     private String url = "http://192.168.1.4:8080/nhanhNhuChop/getPlayer.php";
@@ -68,31 +84,23 @@ public class Home extends AppCompatActivity {
     String name = "";
     String id = "" ;
     int login = 0;
+    Boolean stop_noti = false;
     int insert_data = 0;
+    String CHANNER_ID = "ID";
+    int noti_Id = 1;
     public static int check_am_thanh = 1 , check_nhac_nen = 1;
     CallbackManager callbackManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-
+        setSharedPreferences();
         init();
         set_visible(View.INVISIBLE);
         find_hashkey();
-        setSharedPreferences();
         database = new database(this, "Note.sqlite",null,1);
-        Log.d("login", login+"");
-//        Log.d("insert", insert_data+"");
         setInsert_data();
         set_Login_Logout_Button();
-
-        //database.queryData("DROP TABLE Account");
-
-        home_mp3 = MediaPlayer.create(this, R.raw.home);
-        if(check_nhac_nen == 1){
-            home_mp3.start();
-            home_mp3.setLooping(true);
-        }
     }
     public void init(){
         btChoiNgay = (Button) findViewById(R.id.bt_choi_ngay);
@@ -100,6 +108,12 @@ public class Home extends AppCompatActivity {
         loginButton = (LoginButton) findViewById(R.id.login_button_facebook);
         tv_name_acc_facebook = (TextView) findViewById(R.id.tv_name_acc_facebook);
         tv_all = (TextView) findViewById(R.id.tv_all);
+        editor = sharedPreferences.edit();
+        home_mp3 = MediaPlayer.create(this, R.raw.home);
+        if(check_nhac_nen == 1){
+            home_mp3.start();
+            home_mp3.setLooping(true);
+        }
     }
 
     public void set_visible(int visible){
@@ -142,7 +156,6 @@ public class Home extends AppCompatActivity {
 
                             database.queryData("INSERT INTO Account VALUES('"+id+"','"+name+"')");
                             login = 1;
-                            editor = sharedPreferences.edit();
                             editor.putInt("login", login);
                             editor.commit();
                         } catch (JSONException e) {
@@ -194,33 +207,49 @@ public class Home extends AppCompatActivity {
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.dialog_cai_dat);
         dialog.show();
-        TextView tv_alarm = (TextView) dialog.findViewById(R.id.tv_alarm);
+        final SwitchCompat switchCompat = (SwitchCompat) dialog.findViewById(R.id.switch_thongbao);
+        TextView tv_noti = (TextView) dialog.findViewById(R.id.tv_noti);
         ImageView img_close = (ImageView) dialog.findViewById(R.id.close);
         CheckBox cb_nhac_nen = (CheckBox) dialog.findViewById(R.id.cb_nhac_nen);
         CheckBox cb_am_thanh = (CheckBox) dialog.findViewById(R.id.cb_am_thanh);
-        Spinner spinner_alarm = (Spinner) dialog.findViewById(R.id.spinner_alarm);
-        Spinner spinner_repeat = (Spinner) dialog.findViewById(R.id.spinner_repeat);
+        tv_timePicker = (TextView) dialog.findViewById(R.id.tv_timePicker);
+        spinner_repeat = (Spinner) dialog.findViewById(R.id.spinner_repeat);
         cb_nhac_nen.setChecked(sharedPreferences.getBoolean("check_nhac_nen", true));
         cb_am_thanh.setChecked(sharedPreferences.getBoolean("check_am_thanh", true));
+        switchCompat.setChecked(sharedPreferences.getBoolean("switch_info", false));
+        tv_timePicker.setText(sharedPreferences.getString("time_set", "Đặt giờ"));
+        spinner_repeat.getItemAtPosition(sharedPreferences.getInt("repeat_set", 0));
 
-        ArrayList<String> array_alarm = new ArrayList<>();
-        ArrayList<String> array_repeat = new ArrayList<>();
+        if(switchCompat.isChecked()){
+            tv_timePicker.setEnabled(true);
+            spinner_repeat.setEnabled(true);
+            switch_on();
+        }
+        else{
+            tv_timePicker.setEnabled(false);
+            spinner_repeat.setEnabled(false);
+        }
 
-        array_alarm.add("10:00 AM");
-        array_alarm.add("11:00 AM");
-        array_alarm.add("10:00 PM");
-        array_alarm.add("11:00 PM");
+        switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    tv_timePicker.setEnabled(true);
+                    spinner_repeat.setEnabled(true);
+                    switch_on();
+                    editor.putBoolean("switch_info", true);
+                    editor.commit();
+                }
+                else {
+                    tv_timePicker.setEnabled(false);
+                    spinner_repeat.setEnabled(false);
+                    editor.putBoolean("switch_info", false);
+                    editor.commit();
+                }
+            }
+        });
 
-        array_repeat.add("1 ngay");
-        array_repeat.add("2 ngay");
-        array_repeat.add("3 ngay");
-        ArrayAdapter adapter_alarm = new ArrayAdapter(Home.this, android.R.layout.simple_spinner_dropdown_item, array_alarm);
-        ArrayAdapter adapter_repeat = new ArrayAdapter(Home.this, android.R.layout.simple_spinner_dropdown_item, array_repeat);
 
-        spinner_alarm.setAdapter(adapter_alarm);
-        //adapter_alarm.setDropDownViewResource();
-        spinner_alarm.setDropDownWidth(100);
-        spinner_repeat.setAdapter(adapter_repeat);
         img_close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -233,14 +262,12 @@ public class Home extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
                     check_am_thanh = 1;
-                    editor = sharedPreferences.edit();
                     editor.putInt("id_am_thanh", check_am_thanh);
                     editor.putBoolean("check_am_thanh", true);
                     editor.commit();
                 }
                 else {
                     check_am_thanh = 0;
-                    editor = sharedPreferences.edit();
                     editor.putInt("id_am_thanh", check_am_thanh);
                     editor.putBoolean("check_am_thanh", false);
                     editor.commit();
@@ -255,7 +282,6 @@ public class Home extends AppCompatActivity {
                     check_nhac_nen =1;
                     home_mp3 = MediaPlayer.create(Home.this, R.raw.home);
                     home_mp3.start();
-                    editor = sharedPreferences.edit();
                     editor.putInt("id_nhac_nen", check_nhac_nen);
                     editor.putBoolean("check_nhac_nen", true);
                     editor.commit();
@@ -264,7 +290,6 @@ public class Home extends AppCompatActivity {
                     check_nhac_nen = 0;
                     if(home_mp3.isPlaying())
                         home_mp3.stop();
-                    editor = sharedPreferences.edit();
                     editor.putInt("id_nhac_nen", check_nhac_nen);
                     editor.putBoolean("check_nhac_nen", false);
                     editor.commit();
@@ -277,23 +302,40 @@ public class Home extends AppCompatActivity {
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.dialog_diemcao);
         dialog.show();
+        Button button_server = (Button) dialog.findViewById(R.id.bt_server);
+        Button button_canhan = (Button) dialog.findViewById(R.id.bt_canhan);
         ImageView img_close = (ImageView) dialog.findViewById(R.id.close);
-        ListView listView = (ListView) dialog.findViewById(R.id.listView);
+        FrameLayout frameLayout = (FrameLayout) dialog.findViewById(R.id.frame_layout);
         img_close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.cancel();
             }
         });
+        FragmentManager fragmentManager = getFragmentManager();
+        final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        final fragment_server fragment_server = new fragment_server();
+
+
         player_list = new ArrayList<>();
         adapter = new player_adapter(this, R.layout.player_line, player_list);
-        listView.setAdapter(adapter);
-////        Cursor cursor = database.getData("SELECT * FROM Account");
-////        while(cursor.moveToNext()){
-////            player_list.add(new player(1, cursor.getString(0), cursor.getString(1), 100));
-////        }
         get_high_score(url);
-        Log.d("size array", player_list.size()+"");
+    }
+
+    public void add_fragment(View view){
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        Fragment fragment = null;
+        switch (view.getId()){
+            case R.id.bt_server:
+                    fragment = new fragment_server();
+                break;
+            case R.id.bt_canhan:
+                    fragment = new fragment_canhan();
+                break;
+        }
+        fragmentTransaction.replace(R.id.frame_layout, fragment);
+        fragmentTransaction.commit();
     }
 
     public void get_high_score(String url){
@@ -396,7 +438,6 @@ public class Home extends AppCompatActivity {
                 set_visible(View.INVISIBLE);
                 database.queryData("DELETE FROM Account");
                 login = 0;
-                editor = sharedPreferences.edit();
                 editor.putInt("login", login);
                 editor.commit();
             }
@@ -427,5 +468,85 @@ public class Home extends AppCompatActivity {
 //            database.queryData("DELETE FROM Question");
 //            insert_data = 0;
 //        }
+    }
+
+    public void notification(){
+        Intent intent = new Intent(this, Home.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, CHANNER_ID)
+                .setSmallIcon(R.drawable.trophy)
+                .setContentTitle("Nhanh Như Chớp")
+                .setContentText("Đến giờ chơi game!!!")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.notify(noti_Id, mBuilder.build());
+    }
+
+    public void switch_on(){
+        ArrayList<String> array_repeat = new ArrayList<>();
+        array_repeat.add("1 ngày");
+        array_repeat.add("2 ngày");
+        array_repeat.add("3 ngày");
+        ArrayAdapter adapter_repeat = new ArrayAdapter(Home.this, R.layout.spinner_custom, array_repeat);
+        spinner_repeat.setAdapter(adapter_repeat);
+
+        final Calendar calendar = Calendar.getInstance();
+        final int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        final int minutes = calendar.get(Calendar.MINUTE);
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+        final String[] time = {simpleDateFormat.format(calendar.getTime())};
+
+        tv_timePicker.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TimePickerDialog timePickerDialog = new TimePickerDialog(Home.this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        calendar.set(0,0,0, hourOfDay , minute);
+                        tv_timePicker.setText(simpleDateFormat.format(calendar.getTime()));
+                        editor.putString("time_set", String.valueOf(tv_timePicker.getText()));
+                        editor.commit();
+                    }
+                }, hour, minutes, true);
+                timePickerDialog.show();
+            }
+
+        });
+
+        final Thread thread = new Thread(){
+            public void run(){
+                while(!isInterrupted()){
+                    try {
+                        Thread.sleep(1000);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Long time = System.currentTimeMillis();
+                                String timeString = simpleDateFormat.format(time);
+                                if(timeString.equals(tv_timePicker.getText())){
+                                    notification();
+                                    return;
+                                }
+                            }
+                        });
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        thread.start();
+        if(stop_noti==true)
+            thread.stop();
+
+        String text_repeat = spinner_repeat.getSelectedItem().toString();
+        editor.putInt("repeat_set", spinner_repeat.getSelectedItemPosition());
+        Log.d("123", spinner_repeat.getSelectedItemPosition()+"");
+        editor.commit();
     }
 }

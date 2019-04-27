@@ -79,7 +79,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/rel_layout_nhacnen"
-        android:layout_marginTop="1dp">
+        android:layout_marginTop="1dp"
+        android:layout_marginBottom="2dp">
         <TextView
             android:id="@+id/tv_thongbao_choigame"
             android:layout_width="wrap_content"
@@ -124,7 +125,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginTop="5dp"
             android:textColor="#000000"
-            android:text="Nhac luc"
+            android:text="Nhắc lúc"
             android:textSize="15sp"/>
         <TextView
             android:id="@+id/tv_repeat"
@@ -133,34 +134,41 @@
             android:layout_toRightOf="@+id/img_repeat"
             android:layout_below="@+id/tv_alarm"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="10dp"
             android:textColor="#000000"
-            android:text="Lap lai"
+            android:text="Lặp lại"
             android:textSize="15sp"/>
         <TextView
+            android:id="@+id/tv_noti"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/img_repeat"
-            android:layout_marginLeft="20dp"
+            android:layout_marginLeft="30dp"
             android:layout_marginRight="20dp"
-            android:text="Ban da dat thoi gian choi"
+            android:layout_marginTop="10dp"
+            android:text="Bạn đã đặt thời gian chơi là"
             android:textColor="#FA0202"
             android:textSize="15sp"/>
 
-        <Spinner
-            android:id="@+id/spinner_alarm"
-            android:layout_width="80dp"
-            android:layout_height="50dp"
+        <TextView
+            android:id="@+id/tv_timePicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/tv_thongbao_choigame"
-            android:textSize="30sp"
-            android:layout_toRightOf="@+id/tv_alarm" />
+            android:layout_toRightOf="@+id/tv_alarm"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="5dp"
+            android:text="Nhắc lúc"
+            android:textSize="15sp"
+            android:textColor="#000000"/>
 
         <Spinner
             android:id="@+id/spinner_repeat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/spinner_alarm"
-            android:layout_toRightOf="@+id/tv_repeat"/>
+            android:layout_below="@+id/tv_timePicker"
+            android:layout_toRightOf="@+id/tv_repeat"
+            android:layout_marginTop="5dp"/>
     </RelativeLayout>
 
 

@@ -34,6 +34,8 @@ android:background="@drawable/dialog_shape">
             android:layout_weight="1"
             android:gravity="center">
             <Button
+                android:onClick="add_fragment"
+                android:id="@+id/bt_server"
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
                 android:text="Server"
@@ -48,6 +50,8 @@ android:background="@drawable/dialog_shape">
             android:layout_weight="1"
             android:gravity="center">
             <Button
+                android:onClick="add_fragment"
+                android:id="@+id/bt_canhan"
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
                 android:background="@drawable/button_shape_blue"
@@ -57,13 +61,11 @@ android:background="@drawable/dialog_shape">
                 android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
-    <ScrollView
+    <FrameLayout
+        android:id="@+id/frame_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/layout_button">
-        <ListView
-            android:id="@+id/listView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </ScrollView>
+        android:layout_below="@+id/layout_button"
+        android:layout_margin="2dp">
+    </FrameLayout>
 </RelativeLayout>
