@@ -12,21 +12,40 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".main.Rules" android:screenOrientation="portrait"></activity>
-        <activity android:name=".main.Logo" android:screenOrientation="portrait"/>
-        <activity android:name=".main.Home" android:screenOrientation="portrait">
+        <service
+            android:name=".service.service"
+            android:enabled="true"
+            android:exported="true"></service>
+
+        <activity
+            android:name=".main.Rules"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".main.Logo"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".main.Home"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".main.Play" android:screenOrientation="portrait">
-        </activity>
-        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
-        <provider android:authorities="com.facebook.app.FacebookContentProvider2384796978419020"
+        <activity
+            android:name=".main.Play"
+            android:screenOrientation="portrait"></activity>
+
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+
+        <provider
             android:name="com.facebook.FacebookContentProvider"
-            android:exported="true"/>
+            android:authorities="com.facebook.app.FacebookContentProvider2384796978419020"
+            android:exported="true" />
+
+        <receiver android:name=".service.alarm_service" />
     </application>
 
 </manifest>

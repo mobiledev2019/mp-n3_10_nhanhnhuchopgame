@@ -1,5 +1,6 @@
 package com.quang.minh.nhanhnhuchop.main;
 
+import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -14,6 +15,7 @@ import android.content.pm.Signature;
 import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -56,6 +58,8 @@ import com.quang.minh.nhanhnhuchop.fragment.fragment_canhan;
 import com.quang.minh.nhanhnhuchop.fragment.fragment_server;
 import com.quang.minh.nhanhnhuchop.model.player;
 import com.quang.minh.nhanhnhuchop.model.player_adapter;
+import com.quang.minh.nhanhnhuchop.service.alarm_service;
+import com.quang.minh.nhanhnhuchop.service.timePickerFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -63,12 +67,13 @@ import org.json.JSONObject;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 
-public class Home extends AppCompatActivity {
+public class Home extends AppCompatActivity{
     private ProfilePictureView prof;
     private LoginButton loginButton;
     private TextView tv_name_acc_facebook, tv_all,tv_timePicker;
@@ -78,15 +83,18 @@ public class Home extends AppCompatActivity {
     private ArrayList<player> player_list;
     private String url = "http://192.168.1.4:8080/nhanhNhuChop/getPlayer.php";
     public static MediaPlayer home_mp3;
+    Thread thread;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
+    AlarmManager alarmManager;
+    public static PendingIntent pendingIntent;
     public static database database;
     String name = "";
     String id = "" ;
     int login = 0;
     Boolean stop_noti = false;
     int insert_data = 0;
-    String CHANNER_ID = "ID";
+    public static String CHANNER_ID = "ID";
     int noti_Id = 1;
     public static int check_am_thanh = 1 , check_nhac_nen = 1;
     CallbackManager callbackManager;
@@ -470,23 +478,6 @@ public class Home extends AppCompatActivity {
 //        }
     }
 
-    public void notification(){
-        Intent intent = new Intent(this, Home.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, CHANNER_ID)
-                .setSmallIcon(R.drawable.trophy)
-                .setContentTitle("Nhanh Như Chớp")
-                .setContentText("Đến giờ chơi game!!!")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setContentIntent(pendingIntent)
-                .setAutoCancel(true);
-
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        notificationManager.notify(noti_Id, mBuilder.build());
-    }
-
     public void switch_on(){
         ArrayList<String> array_repeat = new ArrayList<>();
         array_repeat.add("1 ngày");
@@ -499,54 +490,55 @@ public class Home extends AppCompatActivity {
         final int hour = calendar.get(Calendar.HOUR_OF_DAY);
         final int minutes = calendar.get(Calendar.MINUTE);
         final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
-        final String[] time = {simpleDateFormat.format(calendar.getTime())};
+        //final String time = simpleDateFormat.format(calendar.getTime());
 
         tv_timePicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                DialogFragment newFragment = new timePickerFragment();
+//                newFragment.show(getSupportFragmentManager(), "datePicker");
                 TimePickerDialog timePickerDialog = new TimePickerDialog(Home.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        calendar.set(0,0,0, hourOfDay , minute);
+                        //calendar.set(0,0,0, hourOfDay , minute);
+                        calendar.set(Calendar.HOUR_OF_DAY,hourOfDay);
+                        calendar.set(Calendar.MINUTE,minute);
+                        calendar.set(Calendar.SECOND,0);
                         tv_timePicker.setText(simpleDateFormat.format(calendar.getTime()));
+
+                        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                        Intent intent = new Intent(Home.this, alarm_service.class);
+                        pendingIntent = PendingIntent.getBroadcast(Home.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+
                         editor.putString("time_set", String.valueOf(tv_timePicker.getText()));
                         editor.commit();
                     }
                 }, hour, minutes, true);
                 timePickerDialog.show();
             }
-
         });
-
-        final Thread thread = new Thread(){
-            public void run(){
-                while(!isInterrupted()){
-                    try {
-                        Thread.sleep(1000);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Long time = System.currentTimeMillis();
-                                String timeString = simpleDateFormat.format(time);
-                                if(timeString.equals(tv_timePicker.getText())){
-                                    notification();
-                                    return;
-                                }
-                            }
-                        });
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        };
-        thread.start();
-        if(stop_noti==true)
-            thread.stop();
-
         String text_repeat = spinner_repeat.getSelectedItem().toString();
         editor.putInt("repeat_set", spinner_repeat.getSelectedItemPosition());
         Log.d("123", spinner_repeat.getSelectedItemPosition()+"");
         editor.commit();
     }
+
+//    @Override
+//    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.set(Calendar.HOUR_OF_DAY,hourOfDay);
+//        calendar.set(Calendar.MINUTE,minute);
+//        calendar.set(Calendar.SECOND,0);
+////        calendar.set(0,0,0, hourOfDay , minute);
+//        //tv_timePicker.setText(""+ DateFormat.getTimeInstance(DateFormat.SHORT).format(calendar));
+//        tv_timePicker.setText(simpleDateFormat.format(calendar.getTime()));
+//        editor.putString("time_set", String.valueOf(tv_timePicker.getText()));
+//        editor.commit();
+//        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+//        Intent intent = new Intent(Home.this, alarm_service.class);
+//        pendingIntent = PendingIntent.getBroadcast(Home.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+//        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+//    }
 }
