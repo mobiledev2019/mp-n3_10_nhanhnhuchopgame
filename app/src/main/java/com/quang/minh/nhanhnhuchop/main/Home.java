@@ -2,7 +2,6 @@ package com.quang.minh.nhanhnhuchop.main;
 
 import android.app.AlarmManager;
 import android.app.Dialog;
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.PendingIntent;
@@ -15,9 +14,6 @@ import android.content.pm.Signature;
 import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SwitchCompat;
@@ -28,12 +24,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -55,12 +47,10 @@ import com.facebook.login.widget.LoginButton;
 import com.facebook.login.widget.ProfilePictureView;
 import com.quang.minh.nhanhnhuchop.R;
 import com.quang.minh.nhanhnhuchop.database.database;
-import com.quang.minh.nhanhnhuchop.fragment.fragment_canhan;
 import com.quang.minh.nhanhnhuchop.fragment.fragment_server;
 import com.quang.minh.nhanhnhuchop.model.player;
 import com.quang.minh.nhanhnhuchop.model.player_adapter;
 import com.quang.minh.nhanhnhuchop.service.alarm_service;
-import com.quang.minh.nhanhnhuchop.service.timePickerFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -68,7 +58,6 @@ import org.json.JSONObject;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -84,7 +73,6 @@ public class Home extends AppCompatActivity{
     private ArrayList<player> player_list;
     private String url = "http://192.168.1.4:8080/nhanhNhuChop/getPlayer.php";
     public static MediaPlayer home_mp3;
-    Thread thread;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
     AlarmManager alarmManager;
@@ -93,10 +81,7 @@ public class Home extends AppCompatActivity{
     String name = "";
     String id = "" ;
     int login = 0;
-    Boolean stop_noti = false;
     int insert_data = 0;
-    public static String CHANNER_ID = "ID";
-    int noti_Id = 1;
     public static int check_am_thanh = 1 , check_nhac_nen = 1;
     CallbackManager callbackManager;
     @Override
@@ -319,7 +304,7 @@ public class Home extends AppCompatActivity{
         Button button_server = (Button) dialog.findViewById(R.id.bt_server);
         Button button_canhan = (Button) dialog.findViewById(R.id.bt_canhan);
         ImageView img_close = (ImageView) dialog.findViewById(R.id.close);
-        FrameLayout frameLayout = (FrameLayout) dialog.findViewById(R.id.frame_layout);
+        //FrameLayout frameLayout = (FrameLayout) dialog.findViewById(R.id.frame_layout);
         img_close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -333,7 +318,7 @@ public class Home extends AppCompatActivity{
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragment_server fragment_server = new fragment_server();
-                fragmentTransaction.add(R.id.frame_layout, fragment_server);
+                //fragmentTransaction.add(R.id.frame_layout, fragment_server);
                 fragmentTransaction.commit();
             }
         });
@@ -536,6 +521,7 @@ public class Home extends AppCompatActivity{
         Log.d("123", spinner_repeat.getSelectedItemPosition()+"");
         editor.commit();
     }
+
 
 //    @Override
 //    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
