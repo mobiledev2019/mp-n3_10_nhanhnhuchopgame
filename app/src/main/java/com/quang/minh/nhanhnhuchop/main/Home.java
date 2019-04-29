@@ -31,6 +31,7 @@ import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -249,6 +250,11 @@ public class Home extends AppCompatActivity{
                     editor.commit();
                 }
                 else {
+                    Intent intent = new Intent(Home.this, alarm_service.class);
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(Home.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                    alarmManager.cancel(pendingIntent);
+
                     tv_timePicker.setEnabled(false);
                     spinner_repeat.setEnabled(false);
                     editor.putBoolean("switch_info", false);
@@ -320,31 +326,38 @@ public class Home extends AppCompatActivity{
                 dialog.cancel();
             }
         });
-        FragmentManager fragmentManager = getFragmentManager();
-        final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        final fragment_server fragment_server = new fragment_server();
-
+        //FragmentManager fragmentManager = getFragmentManager();
+        button_server.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragment_server fragment_server = new fragment_server();
+                fragmentTransaction.add(R.id.frame_layout, fragment_server);
+                fragmentTransaction.commit();
+            }
+        });
 
         player_list = new ArrayList<>();
         adapter = new player_adapter(this, R.layout.player_line, player_list);
         get_high_score(url);
     }
 
-    public void add_fragment(View view){
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        Fragment fragment = null;
-        switch (view.getId()){
-            case R.id.bt_server:
-                    fragment = new fragment_server();
-                break;
-            case R.id.bt_canhan:
-                    fragment = new fragment_canhan();
-                break;
-        }
-        fragmentTransaction.replace(R.id.frame_layout, fragment);
-        fragmentTransaction.commit();
-    }
+//    public void add_fragment(View view){
+//        FragmentManager fragmentManager = getFragmentManager();
+//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//        Fragment fragment = null;
+//        switch (view.getId()){
+//            case R.id.bt_server:
+//                    fragment = new fragment_server();
+//                break;
+//            case R.id.bt_canhan:
+//                    fragment = new fragment_canhan();
+//                break;
+//        }
+//        fragmentTransaction.replace(R.id.frame_layout, fragment);
+//        fragmentTransaction.commit();
+//    }
 
     public void get_high_score(String url){
         RequestQueue requestQueue = Volley.newRequestQueue(this);
