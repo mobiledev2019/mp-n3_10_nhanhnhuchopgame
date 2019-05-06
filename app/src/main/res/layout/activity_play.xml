@@ -14,12 +14,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <TextView
-                android:id="@+id/tvTieuDe"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/button_diemcao_caidat_shape"
-                />
+
             <ImageButton
                 android:id="@+id/imgButton_On_Off"
                 android:layout_width="30dp"
@@ -31,24 +26,29 @@
                 android:id="@+id/tvDiem"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="7dp"
                 android:textAlignment="center"
-                android:textSize="30sp"
+                android:textSize="25sp"
                 android:textStyle="bold"
                 android:text="100"
-                android:textColor="#FA004B" />
+                android:textColor="#FFFFFF" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/circle_time"/>
             <TextView
                 android:id="@+id/tvThoiGian"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="7dp"
-                android:layout_marginTop="7dp"
+                android:layout_centerHorizontal="true"
                 android:textAlignment="center"
-                android:textSize="20sp"
+                android:layout_marginTop="6dp"
+                android:textSize="16sp"
                 android:textStyle="bold"
-                android:text="1:00"
-                android:textColor="#FFFFFF" />
+                android:text="120"
+                android:textColor="#FF0000" />
         </RelativeLayout>
     </LinearLayout>
     <LinearLayout

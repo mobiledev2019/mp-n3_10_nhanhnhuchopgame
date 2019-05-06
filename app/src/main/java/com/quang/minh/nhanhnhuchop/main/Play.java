@@ -416,11 +416,13 @@ public class Play extends AppCompatActivity {
             @Override
             public void onTick(long millisUntilFinished) {
                 time = time - 1000;
-                tv_thoiGian.setText(dinhDangGio.format(time));
+                tv_thoiGian.setText(time/1000+"");
+                //tv_thoiGian.setText(dinhDangGio.format(time));
             }
             @Override
             public void onFinish() {
-                tv_thoiGian.setText(dinhDangGio.format(time-1000));
+                tv_thoiGian.setText((time-1000)/1000+"");
+                //tv_thoiGian.setText(dinhDangGio.format(time-1000));
                 if(play_mp3.isPlaying())
                     play_mp3.stop();
                 dialog_chia_se();
