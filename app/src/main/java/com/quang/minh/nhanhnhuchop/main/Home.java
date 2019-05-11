@@ -3,7 +3,6 @@ package com.quang.minh.nhanhnhuchop.main;
 import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Intent;
@@ -14,6 +13,7 @@ import android.content.pm.Signature;
 import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SwitchCompat;
@@ -47,6 +47,7 @@ import com.facebook.login.widget.LoginButton;
 import com.facebook.login.widget.ProfilePictureView;
 import com.quang.minh.nhanhnhuchop.R;
 import com.quang.minh.nhanhnhuchop.database.database;
+import com.quang.minh.nhanhnhuchop.fragment.dialog_fragment;
 import com.quang.minh.nhanhnhuchop.fragment.fragment_server;
 import com.quang.minh.nhanhnhuchop.model.player;
 import com.quang.minh.nhanhnhuchop.model.player_adapter;
@@ -69,9 +70,6 @@ public class Home extends AppCompatActivity{
     private TextView tv_name_acc_facebook, tv_all,tv_timePicker;
     private Button btChoiNgay;
     Spinner spinner_repeat;
-    private player_adapter adapter;
-    private ArrayList<player> player_list;
-    private String url = "http://192.168.1.4:8080/nhanhNhuChop/getPlayer.php";
     public static MediaPlayer home_mp3;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
@@ -80,7 +78,7 @@ public class Home extends AppCompatActivity{
     public static database database;
     String name = "";
     String id = "" ;
-    int login = 0;
+    public static int login = 0;
     int insert_data = 0;
     public static int check_am_thanh = 1 , check_nhac_nen = 1;
     CallbackManager callbackManager;
@@ -93,6 +91,7 @@ public class Home extends AppCompatActivity{
         set_visible(View.INVISIBLE);
         find_hashkey();
         database = new database(this, "Note.sqlite",null,1);
+        database.queryData("CREATE TABLE IF NOT EXISTS CaNhan(Score INT(10))");
         setInsert_data();
         set_Login_Logout_Button();
     }
@@ -298,76 +297,10 @@ public class Home extends AppCompatActivity{
     }
 
     public void diem_cao(View view) {
-        final Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.dialog_diemcao);
-        dialog.show();
-        Button button_server = (Button) dialog.findViewById(R.id.bt_server);
-        Button button_canhan = (Button) dialog.findViewById(R.id.bt_canhan);
-        ImageView img_close = (ImageView) dialog.findViewById(R.id.close);
-        //FrameLayout frameLayout = (FrameLayout) dialog.findViewById(R.id.frame_layout);
-        img_close.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.cancel();
-            }
-        });
-        //FragmentManager fragmentManager = getFragmentManager();
-        button_server.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragment_server fragment_server = new fragment_server();
-                //fragmentTransaction.add(R.id.frame_layout, fragment_server);
-                fragmentTransaction.commit();
-            }
-        });
-
-        player_list = new ArrayList<>();
-        adapter = new player_adapter(this, R.layout.player_line, player_list);
-        get_high_score(url);
-    }
-
-//    public void add_fragment(View view){
-//        FragmentManager fragmentManager = getFragmentManager();
-//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//        Fragment fragment = null;
-//        switch (view.getId()){
-//            case R.id.bt_server:
-//                    fragment = new fragment_server();
-//                break;
-//            case R.id.bt_canhan:
-//                    fragment = new fragment_canhan();
-//                break;
-//        }
-//        fragmentTransaction.replace(R.id.frame_layout, fragment);
-//        fragmentTransaction.commit();
-//    }
-
-    public void get_high_score(String url){
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url,
-                null, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
-                for(int i = 0; i< response.length(); i++){
-                    try {
-                        JSONObject jo = response.getJSONObject(i);
-                        player_list.add(new player( i+1 , jo.getString("ID"), jo.getString("NAME"),
-                                jo.getInt("SCORE")));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                adapter.notifyDataSetChanged();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-        });
-        requestQueue.add(jsonArrayRequest);
+        dialog_fragment dialog_fragment = new dialog_fragment();
+        dialog_fragment.show(getSupportFragmentManager(), "fragment");
+//        Intent intent = new Intent(Home.this, HighScore.class);
+//        startActivity(intent);
     }
 
     @Override

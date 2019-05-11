@@ -197,12 +197,14 @@ public class Play extends AppCompatActivity {
                 Map<String,String> params = new HashMap<>();
                 Cursor cursor = Home.database.getData("SELECT * FROM Account");
                 while(cursor.moveToNext()){
-                    params.put("id_player", cursor.getString(0));
-                    params.put("name_player", cursor.getString(1));
-                    params.put("score_player", diem+"");
-                    Log.d("diem", cursor.getString(0));
-                    Log.d("diem", cursor.getString(1));
-                    Log.d("diem", diem+"");
+                    if(Home.login==1) {
+                        params.put("id_player", cursor.getString(0));
+                        params.put("name_player", cursor.getString(1));
+                        params.put("score_player", diem + "");
+                        Log.d("diem", cursor.getString(0));
+                        Log.d("diem", cursor.getString(1));
+                        Log.d("diem", diem + "");
+                    }
                 }
                 return params;
             }
@@ -437,6 +439,7 @@ public class Play extends AppCompatActivity {
         dialog_share.setCancelable(false);
         dialog_share.show();
         postData(url_post);
+        database_canhan();
         share_mp3 = MediaPlayer.create(Play.this, R.raw.share);
         if(Home.check_nhac_nen==1){
             share_mp3.start();
@@ -536,6 +539,11 @@ public class Play extends AppCompatActivity {
             return true;
         }
         return false;
+    }
+
+    public void database_canhan(){
+        Home.database.queryData("INSERT INTO CaNhan VALUES('"+diem+"')");
+        //Home.database.queryData("SELECT * FROM CaNhan ORDER BY Score DESC");
     }
 
 }
