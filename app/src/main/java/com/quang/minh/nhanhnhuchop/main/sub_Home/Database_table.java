@@ -11,7 +11,7 @@ public class Database_table {
     public void database(Context context){
         database = new database(context, "Note.sqlite",null,1);
         database.queryData("CREATE TABLE IF NOT EXISTS CaNhan(ViTri INT(10), Score INT(10))");
-        database.queryData("CREATE TABLE IF NOT EXISTS Server(Score INT(10))");
+        database.queryData("CREATE TABLE IF NOT EXISTS Server(Id VARCHAR(200), Name VARCHAR(200), Score INT(10))");
         database.queryData("CREATE TABLE IF NOT EXISTS Account(Id VARCHAR(200) PRIMARY KEY, Name VARCHAR(200))");
     }
 

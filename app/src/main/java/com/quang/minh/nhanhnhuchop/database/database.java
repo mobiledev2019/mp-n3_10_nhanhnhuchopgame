@@ -16,15 +16,15 @@ public class database extends SQLiteOpenHelper {
         database.execSQL(sql);
     }
 
-    public void insert_account(String id, String name, byte[] profile){
+    public void insert_server(String id, String name, int score){
         SQLiteDatabase database = getWritableDatabase();
-        String sql = "INSERT INTO Account VALUES(?,?,?)";
+        String sql = "INSERT INTO Server VALUES(?,?,?)";
         SQLiteStatement statement = database.compileStatement(sql);
         statement.clearBindings();
 
         statement.bindString(0, id);
         statement.bindString(1, name);
-        statement.bindBlob(2, profile);
+        statement.bindLong(2, score);
 
         statement.executeInsert();
     }

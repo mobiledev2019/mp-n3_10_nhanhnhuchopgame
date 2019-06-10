@@ -52,10 +52,8 @@ public class Play extends AppCompatActivity {
     private String url_get = "http://192.168.1.8:8080/nhanhNhuChop/getData.php";
     private String url_post = "http://192.168.1.8:8080/nhanhNhuChop/insertData.php";
     public static ArrayList<question> questions_array;
-    ArrayList<player> players_array;
     ArrayList<ImageView> img_array;
     ArrayList<TextView> tv_array;
-    Adapter adapter;
     Dialog dialog_share;
 
     Bitmap bitmap_screen;
@@ -176,11 +174,10 @@ public class Play extends AppCompatActivity {
             if(play_mp3.isPlaying())
                 play_mp3.stop();
 
-            screen_play.setDrawingCacheEnabled(false);
-            screen_play.setDrawingCacheEnabled(true);
+//            screen_play.setDrawingCacheEnabled(false);
+//            screen_play.setDrawingCacheEnabled(true);
             //screen_play.buildDrawingCache(true);
-
-            bitmap_screen = screen_play.getDrawingCache();
+//            bitmap_screen = screen_play.getDrawingCache();
             dialog_chia_se();
         }
         else {

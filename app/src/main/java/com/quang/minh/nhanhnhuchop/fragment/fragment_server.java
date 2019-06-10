@@ -1,5 +1,6 @@
 package com.quang.minh.nhanhnhuchop.fragment;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,6 +16,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.quang.minh.nhanhnhuchop.R;
+import com.quang.minh.nhanhnhuchop.database.database;
+import com.quang.minh.nhanhnhuchop.main.Home;
+import com.quang.minh.nhanhnhuchop.main.sub_Home.Database_table;
 import com.quang.minh.nhanhnhuchop.model.player;
 import com.quang.minh.nhanhnhuchop.model.player_adapter;
 
@@ -29,6 +33,8 @@ public class fragment_server extends Fragment {
     private player_adapter adapter;
     private ListView lv_server;
     private String url = "http://192.168.1.8:8080/nhanhNhuChop/getPlayer.php";
+    Cursor cursor;
+    int i = 1;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
@@ -37,7 +43,9 @@ public class fragment_server extends Fragment {
         player_list = new ArrayList<>();
         adapter = new player_adapter(getContext(), R.layout.player_line, player_list);
         lv_server.setAdapter(adapter);
+
         get_high_score(url);
+        getData();
         return  view;
     }
 
@@ -50,8 +58,10 @@ public class fragment_server extends Fragment {
                 for(int i = 0; i< response.length(); i++){
                     try {
                         JSONObject jo = response.getJSONObject(i);
-                        player_list.add(new player( i+1 , jo.getString("ID"), jo.getString("NAME"),
-                                jo.getInt("SCORE")));
+//                        player_list.add(new player( i+1 , jo.getString("ID"), jo.getString("NAME"),
+//                                jo.getInt("SCORE")));
+//                        Database_table.database.insert_server(jo.getString("ID"),jo.getString("NAME"),jo.getInt("SCORE"));
+                        Database_table.database.queryData("INSERT INTO Server VALUES('"+ jo.getString("ID") +"','"+jo.getString("NAME")+"','"+jo.getInt("SCORE")+"')");
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -65,5 +75,17 @@ public class fragment_server extends Fragment {
             }
         });
         requestQueue.add(jsonArrayRequest);
+    }
+
+    public void getData(){
+        cursor = Database_table.database.getData("SELECT * FROM Server ORDER BY Score DESC");
+        if(cursor.getCount()!=0) {
+            while (cursor.moveToNext()) {
+                    player_list.add(new player(i, cursor.getString(0), cursor.getString(1), cursor.getInt(2)));
+                    i = i + 1;
+            }
+            adapter.notifyDataSetChanged();
+        }
+        Database_table.database.queryData("DELETE FROM Server");
     }
 }
