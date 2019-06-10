@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.app.FragmentManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -49,6 +50,9 @@ import com.quang.minh.nhanhnhuchop.R;
 import com.quang.minh.nhanhnhuchop.database.database;
 import com.quang.minh.nhanhnhuchop.fragment.dialog_fragment;
 import com.quang.minh.nhanhnhuchop.fragment.fragment_server;
+import com.quang.minh.nhanhnhuchop.main.sub_Home.Database_table;
+import com.quang.minh.nhanhnhuchop.main.sub_Home.Hash_Key;
+import com.quang.minh.nhanhnhuchop.main.sub_Home.Login_Facebook;
 import com.quang.minh.nhanhnhuchop.model.player;
 import com.quang.minh.nhanhnhuchop.model.player_adapter;
 import com.quang.minh.nhanhnhuchop.service.alarm_service;
@@ -65,23 +69,21 @@ import java.util.Arrays;
 import java.util.Calendar;
 
 public class Home extends AppCompatActivity{
-    private ProfilePictureView prof;
-    private LoginButton loginButton;
-    private TextView tv_name_acc_facebook, tv_all,tv_timePicker;
+    public static ProfilePictureView prof;
+    public static LoginButton loginButton;
+    public static TextView tv_name_acc_facebook, tv_all,tv_timePicker;
     private Button btChoiNgay;
     Spinner spinner_repeat;
     public static MediaPlayer home_mp3;
-    SharedPreferences sharedPreferences;
-    SharedPreferences.Editor editor;
+    public static SharedPreferences sharedPreferences;
+    public static SharedPreferences.Editor editor;
     AlarmManager alarmManager;
     public static PendingIntent pendingIntent;
-    public static database database;
-    String name = "";
-    String id = "" ;
+    public static int vitri = 1;
     public static int login = 0;
-    int insert_data = 0;
+    public static int insert_data = 0;
     public static int check_am_thanh = 1 , check_nhac_nen = 1;
-    CallbackManager callbackManager;
+    public static CallbackManager callbackManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,18 +91,20 @@ public class Home extends AppCompatActivity{
         setSharedPreferences();
         init();
         set_visible(View.INVISIBLE);
-        find_hashkey();
-        database = new database(this, "Note.sqlite",null,1);
-        database.queryData("CREATE TABLE IF NOT EXISTS CaNhan(Score INT(10))");
-        setInsert_data();
-        set_Login_Logout_Button();
+        Hash_Key hash_key = new Hash_Key();
+        hash_key.find_hashkey();
+        Database_table database_table = new Database_table();
+        database_table.database(this);
+        database_table.setInsert_data();
+        Login_Facebook login_facebook = new Login_Facebook();
+        login_facebook.set_Login_Logout_Button();
     }
     public void init(){
-        btChoiNgay = (Button) findViewById(R.id.bt_choi_ngay);
-        prof = (ProfilePictureView) findViewById(R.id.profile_picture);
-        loginButton = (LoginButton) findViewById(R.id.login_button_facebook);
-        tv_name_acc_facebook = (TextView) findViewById(R.id.tv_name_acc_facebook);
-        tv_all = (TextView) findViewById(R.id.tv_all);
+        btChoiNgay = findViewById(R.id.bt_choi_ngay);
+        prof = findViewById(R.id.profile_picture);
+        loginButton = findViewById(R.id.login_button_facebook);
+        tv_name_acc_facebook = findViewById(R.id.tv_name_acc_facebook);
+        tv_all = findViewById(R.id.tv_all);
         editor = sharedPreferences.edit();
         home_mp3 = MediaPlayer.create(this, R.raw.home);
         if(check_nhac_nen == 1){
@@ -109,7 +113,7 @@ public class Home extends AppCompatActivity{
         }
     }
 
-    public void set_visible(int visible){
+    public static void set_visible(int visible){
         tv_all.setVisibility(visible);
         tv_name_acc_facebook.setVisibility(visible);
         prof.setVisibility(visible);
@@ -120,61 +124,6 @@ public class Home extends AppCompatActivity{
         callbackManager.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
     }
-
-    public void set_login_button(){
-        callbackManager = CallbackManager.Factory.create();
-        //        loginButton.setPublishPermissions(Arrays.asList("public_picture","email"));
-        loginButton.setReadPermissions(Arrays.asList("public_profile, email"));
-        database.queryData("CREATE TABLE IF NOT EXISTS Account(Id VARCHAR(200) PRIMARY KEY, Name VARCHAR(200))");
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                set_visible(View.VISIBLE);
-
-                GraphRequest graphRequest = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
-                    @Override
-                    public void onCompleted(JSONObject object, GraphResponse response) {
-                        Log.d("JSON", response.getJSONObject().toString());
-                        try {
-                            name = object.getString("name");
-                            id = object.getString("id");
-                            prof.setProfileId(object.getString("id"));
-                            tv_name_acc_facebook.setText(name);
-                            //Bitmap bmp = BitmapFactory.decodeResource(getResources(), prof);
-//                            BitmapDrawable bitmapDrawable = (BitmapDrawable) prof.getBackground();
-//                            Bitmap bitmap = bitmapDrawable.getBitmap();
-//                            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-//                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-//                            byte[] profile = byteArrayOutputStream.toByteArray();
-
-                            database.queryData("INSERT INTO Account VALUES('"+id+"','"+name+"')");
-                            login = 1;
-                            editor.putInt("login", login);
-                            editor.commit();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-
-                Bundle parameter = new Bundle();
-                parameter.putString("fields", "id,name,email,gender,birthday");
-                graphRequest.setParameters(parameter);
-                graphRequest.executeAsync();
-            }
-
-            @Override
-            public void onCancel() {
-
-            }
-
-            @Override
-            public void onError(FacebookException error) {
-
-            }
-        });
-    }
-
 
 //    @Override
 //    protected void onStart() {
@@ -328,85 +277,13 @@ public class Home extends AppCompatActivity{
         });
     }
 
-    public void find_hashkey(){
-        PackageInfo info;
-        try {
-            info = getPackageManager().getPackageInfo("com.quang.minh.nhanhnhuchop", PackageManager.GET_SIGNATURES);
-            for (Signature signature : info.signatures) {
-                MessageDigest md;
-                md = MessageDigest.getInstance("SHA");
-                md.update(signature.toByteArray());
-                String something = new String(Base64.encode(md.digest(), 0));
-                //String something = new String(Base64.encodeBytes(md.digest()));
-                Log.e("hash key", something);
-            }
-        } catch (PackageManager.NameNotFoundException e1) {
-            Log.e("name not found", e1.toString());
-        } catch (NoSuchAlgorithmException e) {
-            Log.e("no such an algorithm", e.toString());
-        } catch (Exception e) {
-            Log.e("exception", e.toString());
-        }
-    }
-
     public void setSharedPreferences(){
         sharedPreferences = getSharedPreferences("note", MODE_PRIVATE);
         check_am_thanh = sharedPreferences.getInt("id_am_thanh",check_am_thanh);
         check_nhac_nen = sharedPreferences.getInt("id_nhac_nen",check_nhac_nen);
         login = sharedPreferences.getInt("login", login);
+        vitri = sharedPreferences.getInt("vitri", vitri);
         insert_data = sharedPreferences.getInt("insert_data", insert_data);
-    }
-
-    public void set_Login_Logout_Button(){
-        if(login == 0)
-            set_login_button();
-        else {
-            set_visible(View.VISIBLE);
-            Cursor cursor = database.getData("SELECT * FROM Account");
-            while (cursor.moveToNext()) {
-                id = cursor.getString(0);
-                name = cursor.getString(1);
-                prof.setProfileId(id);
-                tv_name_acc_facebook.setText(name);
-            }
-        }
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LoginManager.getInstance().logOut();
-                set_visible(View.INVISIBLE);
-                database.queryData("DELETE FROM Account");
-                login = 0;
-                editor.putInt("login", login);
-                editor.commit();
-            }
-        });
-    }
-
-    public void setInsert_data(){
-        if(insert_data==0){
-            database.queryData("CREATE TABLE IF NOT EXISTS Question(Id INT(11), question VARCHAR(200)" +
-                    ", answer1 VARCHAR(200), answer2 VARCHAR(200), answer3 VARCHAR(200), answer4 VARCHAR(200)," +
-                    "result INT(11), hint VARCHAR(200))");
-            database.queryData("INSERT INTO Question VALUES(13, 'Sấm và sét, ta nhận biết điều nào trước?', 'Sấm', 'Sét', 'Cả 2', 'Không biết', 2, 'Vận tốc ánh sáng nhanh hơn vận tốc âm thanh')");
-            database.queryData("INSERT INTO Question VALUES(14, 'Có một người leo lên núi cao, ông rớt xuống cái bịch hỏi ông có chết không?', 'Có chết', 'Không chết', 'Gãy chân', 'Bể đít', 2, 'Ông rớt cái bịch')");
-            database.queryData("INSERT INTO Question VALUES(15, 'Đi thì đứng, đứng thì ngã là gì?', 'Xe đạp', 'Bàn chân', 'Em bé tập đi', 'Không biết', 1, 'Đoán xem')");
-            database.queryData("INSERT INTO Question VALUES(16, 'Một thằng đổi tên thì nó tên là gì?', 'Long', 'Nam', 'Quân', 'Hải', 4, 'Thằng đổi => đồi thẳng => đồi không cong => còng không đôi => còng không hai => hài không cong => hài thẳng => thằng hải =)))')");
-            database.queryData("INSERT INTO Question VALUES(17, 'Giơ tay chữ v là số mấy?', '5', '4', '3', '2', 1, 'Số la mã')");
-            database.queryData("INSERT INTO Question VALUES(18, 'Có ông già lên núi ổng lấy bèo thấy một con cò gầy xơ xác, tại sao ổng về?', 'Ổng mắc ị', 'Ổng có việc bận', 'Ổng sợ con cò', 'Không có bèo', 4, 'Cò gầy => cò không béo')");
-            database.queryData("INSERT INTO Question VALUES(19, 'Trên chiếc đồng hồ bằng đồng có bao nhiêu loại kim?', '2', '3', '4', '5', 3, 'Khim giờ, kim phút, kim giây, kim loại')");
-            database.queryData("INSERT INTO Question VALUES(20, 'Con chó và con mèo con nào thông minh hơn?', 'Con chó', 'Con mèo', '2 con ngu như nhau', 'Không biết', 1, 'Ngu như... :))')");
-            database.queryData("INSERT INTO Question VALUES(21, 'Có một bà đi chợ đi được 1 lúc bà thấy tấm bảng 130m. Hỏi bà thấy gì mà tức tốc chạy về?', 'Chó đuổi', 'Có bom', 'Đường còn ca quá', 'Có thằng nghiện', 2, 'Nhìn kỹ 130m')");
-            database.queryData("INSERT INTO Question VALUES(22, 'Cầm gì càng lâu sẽ càng vững?', 'Cầm lòng', 'Cầm tiền', 'Cầm đồ', 'Cầm lái', 4, 'Đoán xem')");
-            insert_data = 1;
-            editor = sharedPreferences.edit();
-            editor.putInt("insert_data", insert_data);
-            editor.commit();
-        }
-//        else if(insert_data ==1){
-//            database.queryData("DELETE FROM Question");
-//            insert_data = 0;
-//        }
     }
 
     public void switch_on(){

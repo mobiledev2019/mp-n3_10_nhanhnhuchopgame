@@ -2,7 +2,6 @@ package com.quang.minh.nhanhnhuchop.main;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
@@ -18,23 +17,20 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.share.model.SharePhoto;
 import com.facebook.share.model.SharePhotoContent;
-import com.facebook.share.model.ShareVideo;
-import com.facebook.share.model.ShareVideoContent;
 import com.facebook.share.widget.ShareDialog;
 import com.quang.minh.nhanhnhuchop.R;
-import com.quang.minh.nhanhnhuchop.database.database;
+import com.quang.minh.nhanhnhuchop.main.sub_Home.Database_table;
+import com.quang.minh.nhanhnhuchop.main.sub_Play.Get_questions_data;
+import com.quang.minh.nhanhnhuchop.main.sub_Play.Post_player_data;
 import com.quang.minh.nhanhnhuchop.model.player;
 import com.quang.minh.nhanhnhuchop.model.question;
 
@@ -45,8 +41,6 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Play extends AppCompatActivity {
     private ImageButton imgbt_hint;
@@ -55,9 +49,9 @@ public class Play extends AppCompatActivity {
     private Button bt_bo_qua;
     private ImageView img_1, img_2, img_3, img_4, img_5, img_6, img_7, img_8, img_9, img_10;
     private View screen_play;
-    private String url_get = "http://192.168.1.4:8080/nhanhNhuChop/getData.php";
-    private String url_post = "http://192.168.1.4:8080/nhanhNhuChop/insertData.php";
-    ArrayList<question> questions_array;
+    private String url_get = "http://192.168.1.8:8080/nhanhNhuChop/getData.php";
+    private String url_post = "http://192.168.1.8:8080/nhanhNhuChop/insertData.php";
+    public static ArrayList<question> questions_array;
     ArrayList<player> players_array;
     ArrayList<ImageView> img_array;
     ArrayList<TextView> tv_array;
@@ -67,7 +61,7 @@ public class Play extends AppCompatActivity {
     Bitmap bitmap_screen;
     ShareDialog shareDialog;
 
-    int diem = 100;
+    public static int diem = 100;
     int time = 120;
     int true_case;
     int dap_an;
@@ -81,9 +75,9 @@ public class Play extends AppCompatActivity {
         setContentView(R.layout.activity_play);
         init();
         setEnable(true);
-        getData_from_database();
+        Get_questions_data.getData_from_database();
         if(isOnline()==true) {
-            getData_from_server(url_get);
+            Get_questions_data.getData_from_server(url_get,this);
         }
         Collections.shuffle(questions_array);
         setData(0);
@@ -92,29 +86,29 @@ public class Play extends AppCompatActivity {
     }
 
     public void init(){
-        screen_play = (View) findViewById(R.id.screen_play);
-        imgbt_hint = (ImageButton) findViewById(R.id.imgHint);
-        bt_bo_qua = (Button) findViewById(R.id.bt_bo_qua);
-        tvDiem = (TextView) findViewById(R.id.tvDiem);
-        tv_thoiGian = (TextView) findViewById(R.id.tvThoiGian);
-        tvCauHoi = (TextView) findViewById(R.id.tvCauHoi);
-        tvHint = (TextView) findViewById(R.id.tvHint);
-        tv_number_hint = (TextView) findViewById(R.id.number_hint);
-        tvCau_So = (TextView) findViewById(R.id.tvCau_So);
-        tvDapAn_1 = (TextView) findViewById(R.id.tvDapAn_1);
-        tvDapAn_2 = (TextView) findViewById(R.id.tvDapAn_2);
-        tvDapAn_3 = (TextView) findViewById(R.id.tvDapAn_3);
-        tvDapAn_4 = (TextView) findViewById(R.id.tvDapAn_4);
-        img_1 = (ImageView) findViewById(R.id.img_1);
-        img_2 = (ImageView) findViewById(R.id.img_2);
-        img_3 = (ImageView) findViewById(R.id.img_3);
-        img_4 = (ImageView) findViewById(R.id.img_4);
-        img_5 = (ImageView) findViewById(R.id.img_5);
-        img_6 = (ImageView) findViewById(R.id.img_6);
-        img_7 = (ImageView) findViewById(R.id.img_7);
-        img_8 = (ImageView) findViewById(R.id.img_8);
-        img_9 = (ImageView) findViewById(R.id.img_9);
-        img_10 = (ImageView) findViewById(R.id.img_10);
+        screen_play = findViewById(R.id.screen_play);
+        imgbt_hint = findViewById(R.id.imgHint);
+        bt_bo_qua = findViewById(R.id.bt_bo_qua);
+        tvDiem = findViewById(R.id.tvDiem);
+        tv_thoiGian = findViewById(R.id.tvThoiGian);
+        tvCauHoi = findViewById(R.id.tvCauHoi);
+        tvHint = findViewById(R.id.tvHint);
+        tv_number_hint = findViewById(R.id.number_hint);
+        tvCau_So = findViewById(R.id.tvCau_So);
+        tvDapAn_1 = findViewById(R.id.tvDapAn_1);
+        tvDapAn_2 = findViewById(R.id.tvDapAn_2);
+        tvDapAn_3 = findViewById(R.id.tvDapAn_3);
+        tvDapAn_4 = findViewById(R.id.tvDapAn_4);
+        img_1 = findViewById(R.id.img_1);
+        img_2 = findViewById(R.id.img_2);
+        img_3 = findViewById(R.id.img_3);
+        img_4 = findViewById(R.id.img_4);
+        img_5 = findViewById(R.id.img_5);
+        img_6 = findViewById(R.id.img_6);
+        img_7 = findViewById(R.id.img_7);
+        img_8 = findViewById(R.id.img_8);
+        img_9 = findViewById(R.id.img_9);
+        img_10 = findViewById(R.id.img_10);
         tvCau_So.setVisibility(View.VISIBLE);
 
         questions_array = new ArrayList<>();
@@ -143,82 +137,6 @@ public class Play extends AppCompatActivity {
         if(Home.check_nhac_nen==1){
             play_mp3.start();
             play_mp3.setLooping(true);
-        }
-    }
-
-    private void getData_from_server(String url){
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url,
-                null, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
-                for(int i = 0; i<response.length(); i++){
-                    try {
-                        JSONObject jo = response.getJSONObject(i);
-                        questions_array.add(new question(jo.getInt("ID"), jo.getString("QUESTION"),
-                                jo.getString("ANSWER1"), jo.getString("ANSWER2"), jo.getString("ANSWER3"),
-                                jo.getString("ANSWER4"), jo.getInt("RESULT"), jo.getString("HINT")));
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                Collections.shuffle(questions_array);
-//                setData(0);
-//                Log.d("arr3", questions_array.size()+"");
-            }
-        },
-            new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-        }
-        );
-        requestQueue.add(jsonArrayRequest);
-    }
-
-    private void postData(String url_post){
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url_post
-                , new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-        }){
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String,String> params = new HashMap<>();
-                Cursor cursor = Home.database.getData("SELECT * FROM Account");
-                while(cursor.moveToNext()){
-                    if(Home.login==1) {
-                        params.put("id_player", cursor.getString(0));
-                        params.put("name_player", cursor.getString(1));
-                        params.put("score_player", diem + "");
-                        Log.d("diem", cursor.getString(0));
-                        Log.d("diem", cursor.getString(1));
-                        Log.d("diem", diem + "");
-                    }
-                }
-                return params;
-            }
-        };
-        requestQueue.add(stringRequest);
-    }
-
-    public void getData_from_database(){
-        Cursor cursor = Home.database.getData("SELECT * FROM Question");
-        while(cursor.moveToNext()){
-            questions_array.add(new question(cursor.getInt(0), cursor.getString(1),
-                    cursor.getString(2), cursor.getString(3), cursor.getString(4),
-                    cursor.getString(5), cursor.getInt(6), cursor.getString(7)));
-            Collections.shuffle(questions_array);
         }
     }
 
@@ -438,7 +356,7 @@ public class Play extends AppCompatActivity {
         dialog_share.setCanceledOnTouchOutside(false);
         dialog_share.setCancelable(false);
         dialog_share.show();
-        postData(url_post);
+        Post_player_data.postData(url_post,this);
         database_canhan();
         share_mp3 = MediaPlayer.create(Play.this, R.raw.share);
         if(Home.check_nhac_nen==1){
@@ -542,7 +460,11 @@ public class Play extends AppCompatActivity {
     }
 
     public void database_canhan(){
-        Home.database.queryData("INSERT INTO CaNhan VALUES('"+diem+"')");
+        Database_table.database.queryData("INSERT INTO CaNhan VALUES('"+Home.vitri+"','"+diem+"')");
+        Home.vitri = Home.vitri + 1;
+        Home.editor = Home.sharedPreferences.edit();
+        Home.editor.putInt("vitri", Home.vitri);
+        Home.editor.commit();
         //Home.database.queryData("SELECT * FROM CaNhan ORDER BY Score DESC");
     }
 

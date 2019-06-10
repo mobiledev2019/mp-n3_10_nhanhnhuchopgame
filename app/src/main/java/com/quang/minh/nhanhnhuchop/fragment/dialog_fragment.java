@@ -1,6 +1,7 @@
 package com.quang.minh.nhanhnhuchop.fragment;
 
 
+import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -36,20 +37,23 @@ public class dialog_fragment extends DialogFragment {
         bt_server.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(i!=0) {
+                if(i==1) {
                     fragmentTransaction = getChildFragmentManager().beginTransaction();
                     fragmentTransaction.replace(R.id.frame_layout, new fragment_server());
                     fragmentTransaction.commit();
+                    i = 0;
                 }
             }
         });
         bt_canhan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fragmentTransaction = getChildFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.frame_layout, new fragment_canhan());
-                fragmentTransaction.commit();
-                i = 1;
+                if(i==0) {
+                    fragmentTransaction = getChildFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(R.id.frame_layout, new fragment_canhan());
+                    fragmentTransaction.commit();
+                    i = 1;
+                }
             }
         });
         return view;

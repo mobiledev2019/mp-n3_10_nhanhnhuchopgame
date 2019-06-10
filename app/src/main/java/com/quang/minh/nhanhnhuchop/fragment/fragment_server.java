@@ -28,7 +28,7 @@ public class fragment_server extends Fragment {
     private ArrayList<player> player_list;
     private player_adapter adapter;
     private ListView lv_server;
-    private String url = "http://192.168.1.7:8080/nhanhNhuChop/getPlayer.php";
+    private String url = "http://192.168.1.8:8080/nhanhNhuChop/getPlayer.php";
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {

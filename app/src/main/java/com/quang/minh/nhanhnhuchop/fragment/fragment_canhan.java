@@ -17,6 +17,7 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.quang.minh.nhanhnhuchop.R;
 import com.quang.minh.nhanhnhuchop.main.Home;
+import com.quang.minh.nhanhnhuchop.main.sub_Home.Database_table;
 import com.quang.minh.nhanhnhuchop.model.player;
 import com.quang.minh.nhanhnhuchop.model.player_adapter;
 
@@ -45,11 +46,13 @@ public class fragment_canhan extends Fragment {
     }
 
     public void getData(){
-        cursor = Home.database.getData("SELECT * FROM CaNhan ORDER BY Score DESC");
+        cursor = Database_table.database.getData("SELECT * FROM CaNhan ORDER BY Score DESC");
         if(cursor.getCount()!=0) {
             while (cursor.moveToNext()) {
-                player_list.add(new player(i, null, "Player " + i, cursor.getInt(0)));
-                i = i+1;
+                if(i<=10) {
+                    player_list.add(new player(i, null, "Player " + cursor.getInt(0), cursor.getInt(1)));
+                    i = i + 1;
+                }
             }
             adapter.notifyDataSetChanged();
         }
