@@ -78,7 +78,7 @@ public class fragment_server extends Fragment {
     }
 
     public void getData(){
-        cursor = Database_table.database.getData("SELECT * FROM Server ORDER BY Score DESC");
+        cursor = Database_table.database.getData("SELECT Id , Name , MAX(Score) AS MAXScore FROM Server GROUP BY Name ORDER BY MAXScore DESC");
         if(cursor.getCount()!=0) {
             while (cursor.moveToNext()) {
                     player_list.add(new player(i, cursor.getString(0), cursor.getString(1), cursor.getInt(2)));

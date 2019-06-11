@@ -71,7 +71,8 @@ import java.util.Calendar;
 public class Home extends AppCompatActivity{
     public static ProfilePictureView prof;
     public static LoginButton loginButton;
-    public static TextView tv_name_acc_facebook, tv_all,tv_timePicker;
+    public static TextView tv_name_acc_facebook, tv_all;
+    TextView tv_timePicker, tv_noti;
     private Button btChoiNgay;
     Spinner spinner_repeat;
     public static MediaPlayer home_mp3;
@@ -149,27 +150,30 @@ public class Home extends AppCompatActivity{
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.dialog_cai_dat);
         dialog.show();
-        final SwitchCompat switchCompat = (SwitchCompat) dialog.findViewById(R.id.switch_thongbao);
-        TextView tv_noti = (TextView) dialog.findViewById(R.id.tv_noti);
-        ImageView img_close = (ImageView) dialog.findViewById(R.id.close);
-        CheckBox cb_nhac_nen = (CheckBox) dialog.findViewById(R.id.cb_nhac_nen);
-        CheckBox cb_am_thanh = (CheckBox) dialog.findViewById(R.id.cb_am_thanh);
-        tv_timePicker = (TextView) dialog.findViewById(R.id.tv_timePicker);
-        spinner_repeat = (Spinner) dialog.findViewById(R.id.spinner_repeat);
+        final SwitchCompat switchCompat = dialog.findViewById(R.id.switch_thongbao);
+        tv_noti = dialog.findViewById(R.id.tv_noti);
+        ImageView img_close = dialog.findViewById(R.id.close);
+        CheckBox cb_nhac_nen = dialog.findViewById(R.id.cb_nhac_nen);
+        CheckBox cb_am_thanh = dialog.findViewById(R.id.cb_am_thanh);
+        tv_timePicker = dialog.findViewById(R.id.tv_timePicker);
+        spinner_repeat = dialog.findViewById(R.id.spinner_repeat);
         cb_nhac_nen.setChecked(sharedPreferences.getBoolean("check_nhac_nen", true));
         cb_am_thanh.setChecked(sharedPreferences.getBoolean("check_am_thanh", true));
         switchCompat.setChecked(sharedPreferences.getBoolean("switch_info", false));
         tv_timePicker.setText(sharedPreferences.getString("time_set", "Đặt giờ"));
         spinner_repeat.getItemAtPosition(sharedPreferences.getInt("repeat_set", 0));
+        tv_noti.setText("Bạn đặt thời gian chơi là "+sharedPreferences.getString("time_set", "Đặt giờ"));
 
         if(switchCompat.isChecked()){
             tv_timePicker.setEnabled(true);
             spinner_repeat.setEnabled(true);
+            tv_noti.setVisibility(View.VISIBLE);
             switch_on();
         }
         else{
             tv_timePicker.setEnabled(false);
             spinner_repeat.setEnabled(false);
+            tv_noti.setVisibility(View.INVISIBLE);
         }
 
         switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -178,6 +182,7 @@ public class Home extends AppCompatActivity{
                 if(isChecked){
                     tv_timePicker.setEnabled(true);
                     spinner_repeat.setEnabled(true);
+                    tv_noti.setVisibility(View.VISIBLE);
                     switch_on();
                     editor.putBoolean("switch_info", true);
                     editor.commit();
@@ -190,6 +195,7 @@ public class Home extends AppCompatActivity{
 
                     tv_timePicker.setEnabled(false);
                     spinner_repeat.setEnabled(false);
+                    tv_noti.setVisibility(View.INVISIBLE);
                     editor.putBoolean("switch_info", false);
                     editor.commit();
                 }
@@ -252,31 +258,6 @@ public class Home extends AppCompatActivity{
 //        startActivity(intent);
     }
 
-    @Override
-    public void onBackPressed() {
-        final Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.dialog_exit);
-        dialog.setCanceledOnTouchOutside(false);
-        Button btThoat = (Button) dialog.findViewById(R.id.bt_thoat);
-        Button btQuayLai = (Button) dialog.findViewById(R.id.bt_quay_lai);
-        TextView tvAll = (TextView) dialog.findViewById(R.id.tvAll);
-        tvAll.setText("Bạn muốn thoát trò chơi?");
-        dialog.show();
-        btQuayLai.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.cancel();
-            }
-        });
-        btThoat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                System.exit(0);
-            }
-        });
-    }
-
     public void setSharedPreferences(){
         sharedPreferences = getSharedPreferences("note", MODE_PRIVATE);
         check_am_thanh = sharedPreferences.getInt("id_am_thanh",check_am_thanh);
@@ -319,6 +300,7 @@ public class Home extends AppCompatActivity{
                         pendingIntent = PendingIntent.getBroadcast(Home.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
                         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
 
+                        tv_noti.setText("Bạn đặt thời gian chơi là "+String.valueOf(tv_timePicker.getText()));
                         editor.putString("time_set", String.valueOf(tv_timePicker.getText()));
                         editor.commit();
                     }
@@ -330,6 +312,31 @@ public class Home extends AppCompatActivity{
         editor.putInt("repeat_set", spinner_repeat.getSelectedItemPosition());
         Log.d("123", spinner_repeat.getSelectedItemPosition()+"");
         editor.commit();
+    }
+
+    @Override
+    public void onBackPressed() {
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_exit);
+        dialog.setCanceledOnTouchOutside(false);
+        Button btThoat = dialog.findViewById(R.id.bt_thoat);
+        Button btQuayLai = dialog.findViewById(R.id.bt_quay_lai);
+        TextView tvAll = dialog.findViewById(R.id.tvAll);
+        tvAll.setText("Bạn muốn thoát trò chơi?");
+        dialog.show();
+        btQuayLai.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.cancel();
+            }
+        });
+        btThoat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+                System.exit(0);
+            }
+        });
     }
 
 

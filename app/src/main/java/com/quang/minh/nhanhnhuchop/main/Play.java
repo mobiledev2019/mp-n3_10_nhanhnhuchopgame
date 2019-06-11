@@ -142,8 +142,8 @@ public class Play extends AppCompatActivity {
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.dialog_exit);
         dialog.setCanceledOnTouchOutside(false);
-        Button btThoat = (Button) dialog.findViewById(R.id.bt_thoat);
-        Button btQuayLai = (Button) dialog.findViewById(R.id.bt_quay_lai);
+        Button btThoat = dialog.findViewById(R.id.bt_thoat);
+        Button btQuayLai = dialog.findViewById(R.id.bt_quay_lai);
         dialog.show();
         btQuayLai.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -421,8 +421,8 @@ public class Play extends AppCompatActivity {
             final Dialog dialog = new Dialog(this);
             dialog.setContentView(R.layout.dialog_exit);
             dialog.setCanceledOnTouchOutside(false);
-            Button btThoat = (Button) dialog.findViewById(R.id.bt_thoat);
-            Button btQuayLai = (Button) dialog.findViewById(R.id.bt_quay_lai);
+            Button btThoat = dialog.findViewById(R.id.bt_thoat);
+            Button btQuayLai = dialog.findViewById(R.id.bt_quay_lai);
             dialog.show();
             btQuayLai.setOnClickListener(new View.OnClickListener() {
                 @Override
