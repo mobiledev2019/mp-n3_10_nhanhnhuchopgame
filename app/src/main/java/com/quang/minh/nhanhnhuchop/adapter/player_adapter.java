@@ -1,4 +1,4 @@
-package com.quang.minh.nhanhnhuchop.model;
+package com.quang.minh.nhanhnhuchop.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.facebook.login.widget.ProfilePictureView;
 import com.quang.minh.nhanhnhuchop.R;
+import com.quang.minh.nhanhnhuchop.model.player;
 
 import java.util.ArrayList;
 

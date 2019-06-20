@@ -16,11 +16,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.quang.minh.nhanhnhuchop.R;
-import com.quang.minh.nhanhnhuchop.database.database;
-import com.quang.minh.nhanhnhuchop.main.Home;
 import com.quang.minh.nhanhnhuchop.main.sub_Home.Database_table;
 import com.quang.minh.nhanhnhuchop.model.player;
-import com.quang.minh.nhanhnhuchop.model.player_adapter;
+import com.quang.minh.nhanhnhuchop.adapter.player_adapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,7 +30,7 @@ public class fragment_server extends Fragment {
     private ArrayList<player> player_list;
     private player_adapter adapter;
     private ListView lv_server;
-    private String url = "http://192.168.1.8:8080/nhanhNhuChop/getPlayer.php";
+    private String url = "http://192.168.43.148:8080/nhanhNhuChop/getPlayer.php";
     Cursor cursor;
     int i = 1;
     @Nullable

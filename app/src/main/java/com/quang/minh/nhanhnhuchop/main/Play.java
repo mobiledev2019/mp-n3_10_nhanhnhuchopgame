@@ -49,8 +49,8 @@ public class Play extends AppCompatActivity {
     private Button bt_bo_qua;
     private ImageView img_1, img_2, img_3, img_4, img_5, img_6, img_7, img_8, img_9, img_10;
     private View screen_play;
-    private String url_get = "http://192.168.1.8:8080/nhanhNhuChop/getData.php";
-    private String url_post = "http://192.168.1.8:8080/nhanhNhuChop/insertData.php";
+    private String url_get = "http://192.168.43.148:8080/nhanhNhuChop/getData.php";
+    private String url_post = "http://192.168.43.148:8080/nhanhNhuChop/insertData.php";
     public static ArrayList<question> questions_array;
     ArrayList<ImageView> img_array;
     ArrayList<TextView> tv_array;
@@ -174,10 +174,10 @@ public class Play extends AppCompatActivity {
             if(play_mp3.isPlaying())
                 play_mp3.stop();
 
-//            screen_play.setDrawingCacheEnabled(false);
-//            screen_play.setDrawingCacheEnabled(true);
-            //screen_play.buildDrawingCache(true);
-//            bitmap_screen = screen_play.getDrawingCache();
+            screen_play.setDrawingCacheEnabled(false);
+            screen_play.setDrawingCacheEnabled(true);
+            screen_play.buildDrawingCache(true);
+            bitmap_screen = screen_play.getDrawingCache();
             dialog_chia_se();
         }
         else {
@@ -376,6 +376,7 @@ public class Play extends AppCompatActivity {
                     Home.home_mp3.start();
                     Home.home_mp3.setLooping(true);
                 }
+                diem = 100;
                 finish();
             }
         });

@@ -2,23 +2,15 @@ package com.quang.minh.nhanhnhuchop.main;
 
 import android.app.AlarmManager;
 import android.app.Dialog;
-import android.app.FragmentManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
-import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SwitchCompat;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -30,42 +22,18 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.Volley;
-import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
-import com.facebook.login.LoginManager;
-import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.facebook.login.widget.ProfilePictureView;
 import com.quang.minh.nhanhnhuchop.R;
-import com.quang.minh.nhanhnhuchop.database.database;
 import com.quang.minh.nhanhnhuchop.fragment.dialog_fragment;
-import com.quang.minh.nhanhnhuchop.fragment.fragment_server;
 import com.quang.minh.nhanhnhuchop.main.sub_Home.Database_table;
 import com.quang.minh.nhanhnhuchop.main.sub_Home.Hash_Key;
 import com.quang.minh.nhanhnhuchop.main.sub_Home.Login_Facebook;
-import com.quang.minh.nhanhnhuchop.model.player;
-import com.quang.minh.nhanhnhuchop.model.player_adapter;
 import com.quang.minh.nhanhnhuchop.service.alarm_service;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 
 public class Home extends AppCompatActivity{

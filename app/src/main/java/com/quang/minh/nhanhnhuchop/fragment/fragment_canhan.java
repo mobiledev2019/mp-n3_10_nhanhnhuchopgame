@@ -9,21 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.Volley;
 import com.quang.minh.nhanhnhuchop.R;
-import com.quang.minh.nhanhnhuchop.main.Home;
 import com.quang.minh.nhanhnhuchop.main.sub_Home.Database_table;
 import com.quang.minh.nhanhnhuchop.model.player;
-import com.quang.minh.nhanhnhuchop.model.player_adapter;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.quang.minh.nhanhnhuchop.adapter.player_adapter;
 
 import java.util.ArrayList;
 
