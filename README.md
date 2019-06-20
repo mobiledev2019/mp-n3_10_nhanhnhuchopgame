@@ -28,6 +28,15 @@
 &emsp;&emsp;&emsp;&emsp;- Sử dụng server PHPmyAdmin<br/>
 &emsp;&emsp;&emsp;&emsp;- Sử dụng API viết bằng PHP chuyển dữ liêu sang JSON<br/>
 &emsp;&emsp;&emsp;&emsp;- Nhúng Facebook API<br/>
-     
+&emsp;&emsp;**3. Phân công công việc nhóm** <br/>
+&emsp;&emsp;&emsp;&emsp;Nguyễn Quang Minh: <br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;- Design layout, drawable.<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;- Thiết kế Database, viết API PHP.<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;- Xử lý các sự kiện.<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;- Xử lý dữ liệu: dữ liệu câu hỏi, thời gian,…<br/>
+&emsp;&emsp;&emsp;&emsp;Nguyễn Vĩnh Hưng: <br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;- Xử lý, thêm Facebook API, đăng nhập, chia sẻ lên Facebook.<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;- Xử lý phần Setting, bật tắt âm thanh, cài đặt service thông báo, đặt lịch.<br/>
+&emsp;&emsp;&emsp;&emsp;Nguyễn Văn Vinh: <br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;- Xử lý các Fragment bảng xếp hạng server, cá nhân.<br/>
 
-  
